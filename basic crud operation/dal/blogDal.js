@@ -10,12 +10,23 @@ const addBlog = async (dbClient, title, content, writtenBy) => {
 };
 
 const getBlogsByUserId = async (dbClient, userId) => {
-  const sqlStatement = `SELECT * FROM "Blogs" WHERE written_by = $1`;
+  // getting likes of the blog
+  const sqlStatement = `SELECT blog.*, COUNT(blog_id) AS likes from "Blogs" AS blog
+                        LEFT JOIN blog_likes AS bl 
+                        ON
+                        blog.id = bl.blog_id
+                        WHERE blog.written_by = $1
+                        GROUP BY blog.id;`;
   const { rows } = await dbClient.query(sqlStatement, [userId]);
   return rows;
 };
 const getBlogs = async (dbClient) => {
-  const sqlStatement = `SELECT * FROM "Blogs"`;
+  // getting likes of the blog
+  const sqlStatement = `SELECT blog.*, COUNT(blog_id) as likes from "Blogs" AS blog
+                        LEFT JOIN blog_likes AS bl 
+                        ON
+                        blog.id = bl.blog_id
+                        GROUP BY blog.id;`;
   const { rows } = await dbClient.query(sqlStatement);
   return rows;
 };
